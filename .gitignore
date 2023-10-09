@@ -1,2 +1,8 @@
 # Media
 *.jpg
+
+# Datasets
+models/iris-segmentation/data/*
+
+# Generated output
+output/*
