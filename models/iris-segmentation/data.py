@@ -5,17 +5,26 @@ from torch.utils.data import Dataset
 from PIL import Image
 
 class IrisDataset(Dataset):
-    def __init__(self, data_dir, transform=None):
-        self.data_dir = data_dir
+    def __init__(self, root, transform=None):
+        self.root = root
         self.transform = transform
-        self.data_files = os.listdir(data_dir)
+        
+class CASIAIris(IrisDataset):
+    def __init__(self, root, transform=None):
+        super().__init__(root, transform)
+        self.ipts = os.listdir(f'{self.root}\\{self.sub_dir}\\input')
+        self.tgts = os.listdir(f'{self.root}\\{self.sub_dir}\\segmentation')
         
     def __len__(self):
-        return len(self.data_files)
-        
-    def __getitem__(self, idx):
+        return len(self.ipts)
+    
+    def __getitem__(self, index):
         try:
-            pass
+            ipt = Image.open(f'{self.ipts[index]}')
+            tgt = Image.open(f'{self.tgts[index]}')
+            if self.transform:
+                ipt, tgt = self.transform(ipt, tgt)
+            return ipt, tgt
         except:
-            print(f'Could not get data item with index {idx}.')
-
+            print(f'Could not get data pair at index {index}!')
+    
