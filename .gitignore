@@ -4,5 +4,6 @@
 # Datasets
 models/iris-segmentation/data/*
 
-# Generated output
+# Generated
 output/*
+*.pyc
