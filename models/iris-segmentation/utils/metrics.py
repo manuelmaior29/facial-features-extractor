@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 from sklearn.metrics import confusion_matrix
 
 class _StreamMetrics(object):
@@ -29,7 +30,7 @@ class SegmentationMetrics(_StreamMetrics):
 
     def _fast_hist(self, label_tgt, label_pred):
         mask = (label_tgt >= 0) & (label_tgt < self.num_classes)
-        hist = np.bincount(x=self.num_classes * label_tgt[mask].astype(int) + label_pred[mask],
+        hist = np.bincount(self.num_classes * label_tgt[mask].to(torch.int) + label_pred[mask],
                            minlength=self.num_classes ** 2).reshape(self.num_classes, self.num_classes)
         return hist
 
