@@ -39,7 +39,7 @@ class SegmentationMetrics(_StreamMetrics):
             self.confusion_matrix += self._fast_hist(tgt_.flatten(), pred_.flatten())
 
     def get_results(self):
-        hist  = self.confusion_matrix
+        hist = self.confusion_matrix
         acc = np.diag(hist).sum() / hist.sum()
         acc_cls = np.diag(hist) / hist.sum(axis=1)
         acc_cls = np.nanmean(acc_cls)

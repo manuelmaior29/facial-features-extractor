@@ -37,14 +37,19 @@ def train(model: nn.Module, dataloader_train: DataLoader, dataloader_val: DataLo
     model.to(device)
     epoch_losses = []
     metric_results = []
+    best_model, best_miou = model, 0.0
     for _ in tqdm(range(epochs)):
         model, loss = train_epoch(model, dataloader_train, optimizer, criterion, device)
         epoch_losses += [loss]
         scheduler.step()
         validate(model, dataloader_val, metrics, device)
-        metric_results += [metrics.get_results()]
+        mertic_results_epoch = metrics.get_results()
+        metric_results += [mertic_results_epoch]
+        if mertic_results_epoch['Mean IoU'] > best_miou:
+            best_model, best_miou = model, metrics.get_results()['Mean IoU']
     save_simple_2d_plot(range(epochs), epoch_losses, title='Loss over epochs', xlabel='Epoch', ylabel='Loss')
     save_simple_2d_plot(range(epochs), [x['Mean IoU'] for x in metric_results], title='mIoU over epochs', xlabel='Epoch', ylabel='mIoU')
+    model = best_model
 
 def main():
     # Parameters
@@ -56,9 +61,8 @@ def main():
     parser.add_argument('--epochs', type=int, required=True)
     parser.add_argument('--lr', type=float, required=True)
     parser.add_argument('--batch_size', type=int, required=True)
-    parser.add_argument('--seed', type=int, required=True)
+    parser.add_argument('--seed', type=int, required=True, default=1)
     args = parser.parse_args()
-
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     random.seed(args.seed)
 
@@ -85,7 +89,9 @@ def main():
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
     metrics = SegmentationMetrics(num_classes=2)
 
+    # Model training
     train(model, iris_dataloader_train, iris_dataloader_val, scheduler, optimizer, criterion, metrics, device, epochs=args.epochs)
+    torch.save(model.state_dict(), f'iris-segmentation_{datetime.now().strftime(r"%d-%m-%Y_%H-%M-%S")}.pth')
 
 if __name__ == '__main__':
     main()

@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
-import time
+from datetime import datetime
+import torch
 
 def show_example_pair(ipt_image, tgt_image):
     fig, axs = plt.subplots(1, 2)
@@ -17,4 +18,4 @@ def save_simple_2d_plot(x, y, title=None, xlabel=None, ylabel=None):
         axs.set_xlabel(xlabel)
     if ylabel:
         axs.set_ylabel(ylabel)
-    fig.savefig(f'{title}_{time.time().__repr__()}.png')
+    fig.savefig(f'{title}_{datetime.now().strftime(r"%d-%m-%Y_%H-%M-%S")}.png')

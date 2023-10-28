@@ -8,3 +8,5 @@ models/iris-segmentation/data/*
 output/*
 *.pyc
 *.png
+*.pth
+.vscode/launch.json
